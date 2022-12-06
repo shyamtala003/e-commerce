@@ -1,8 +1,11 @@
 import mongoose from 'mongoose';
-import authRole from '../utils/authRole'
+import authRole from '../utils/authRole';
+import bcryptjs from 'bcryptjs';
+import JWT from 'jsonwebtoken';
+import crypto from 'crypto';
 
-const userSchema=mongoose.Schema(
-    {
+
+const userSchema=mongoose.Schema({
     name:{
         type:String,
         required:[true,"name is required"],
@@ -31,6 +34,19 @@ const userSchema=mongoose.Schema(
         timestamps:true
     }
 
-)
+);
+
+// mongoose hooks
+userSchema.pre("save",async function(next){
+    if(this.modified(this.password))
+    {
+        this.password= await bcryptjs.hash(this.password,10);
+        next();
+    }
+    else
+    {
+        return next();
+    }
+})
 
 export default mongoose.model("User",userSchema);
