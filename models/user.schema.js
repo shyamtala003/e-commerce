@@ -40,7 +40,7 @@ const userSchema=mongoose.Schema({
 
 // mongoose hooks
 userSchema.pre("save",async function(next){
-    if(this.modified(this.password))
+    if(this.isModified(this.password))
     {
         this.password= await bcrypt.hash(this.password,10);
         next();
